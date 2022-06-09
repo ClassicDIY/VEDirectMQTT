@@ -1,0 +1,53 @@
+services:
+  classic_mqtt:
+    container_name: classic_mqtt
+    image: classicdiy/classicmqtt
+    restart: unless-stopped
+    environment:
+      - LOGLEVEL=DEBUG
+      - CLASSIC=192.168.86.37
+      - CLASSIC_PORT=502
+      - CLASSIC_NAME=MyWorkshop
+      - MQTT_HOST=mosquitto
+      - MQTT_PORT=1883
+      - MQTT_ROOT=ClassicMQTT
+      - MQTT_USER=ClassicPublisher
+      - MQTT_PASS=ClassicPub123
+    networks:
+      - iotstack_nw
+
+# uncomment the following block if you have a second classic, change the CLASSIC ip address and CLASSIC_NAME
+#  classic_mqtt2:
+#    container_name: classic_mqtt2
+#    image: classicdiy/classicmqtt
+#    restart: unless-stopped
+#    environment:
+#      - LOGLEVEL=DEBUG
+#      - CLASSIC=192.168.86.137
+#      - CLASSIC_PORT=502
+#      - CLASSIC_NAME=MyShed
+#      - MQTT_HOST=mosquitto
+#      - MQTT_PORT=1883
+#      - MQTT_ROOT=ClassicMQTT
+#      - MQTT_USER=ClassicPublisher
+#      - MQTT_PASS=ClassicPub123
+#    networks:
+#      - iotstack_nw
+
+# Here is an example using an external MQTT broker
+#  classic_mqtt:
+#    container_name: classic_mqtt
+#    image: classicdiy/classicmqtt
+#    restart: unless-stopped
+#    environment:
+#      - LOGLEVEL=DEBUG
+#      - CLASSIC=192.168.86.37
+#      - CLASSIC_PORT=502
+#      - CLASSIC_NAME=MyWorkshop
+#      - MQTT_HOST=192.168.86.82
+#      - MQTT_PORT=1883
+#      - MQTT_ROOT=ClassicMQTT
+#      - MQTT_USER=HASSUser
+#      - MQTT_PASS=HASSpw
+#    networks:
+#      - iotstack_nw
