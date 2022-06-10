@@ -2,8 +2,8 @@
 # VE.Direct MQTT Publisher Python Implementation
 
 
-When it comes time to run the program, there are parameters that can be set or passed they are:  
-**Parameters:**  
+When it comes time to run the program, there are parameters that can be set or passed they are:
+**Parameters:**
 ```  
 --vedirect_name <VBM700>        : The name of the Victron device you are reading from, defaults to VBM700 if unspecified.  
 --vedirect_port </dev/ttyUSB0>  : The name of the usb port the Victron device is plugged into. Defaults to /dev/ttyUSB0 if unspecified.  
@@ -13,6 +13,6 @@ When it comes time to run the program, there are parameters that can be set or p
 --mqtt_root <ClassicMQTT>       : The root for your MQTT topics, defaults to ClassicMQTT if unspecified.  
 --mqtt_user <username>          : The username to access the MQTT Broker.  
 --mqtt_pass <password>          : The password to access the MQTT Broker.
---publish_rate <60>              : The amount of seconds between updates when in wake mode (default is 5 seconds).
-```  
+--publish_rate <60>             : The amount of seconds between updates (default is 60 seconds).
+```
 

@@ -1,15 +1,18 @@
 services:
   vedirect_mqtt:
     container_name: vedirect_mqtt
-    build: <location of vedirect_mqtt.py>/.
+    build: /home/pi/automation/VEDirectMQTT/code/Python/.
     restart: unless-stopped
+    devices:
+    - /dev/ttyUSB0
     environment:
-      - LOGLEVEL=DEBUG
-      - VEDIRECT_NAME=BMV700
-      - MQTT_HOST=mosquitto
-      - MQTT_PORT=1883
-      - MQTT_ROOT=VEDirectMQTT
-      - MQTT_USER=ClassicPublisher
-      - MQTT_PASS=ClassicPub123
-    networks:
-      - iotstack_nw
+    - LOGLEVEL=DEBUG
+    - VEDIRECT_NAME=BMV700
+    - VEDIRECT_PORT=/dev/ttyUSB0
+    - VEDIRECT_TIMEOUT=60
+    - PUBLISH_RATE=15
+    - MQTT_HOST=remotepi.glaserisland.pertino.net
+    - MQTT_PORT=1883
+    - MQTT_ROOT=VEDirectMQTT
+    - MQTT_USER=ClassicPublisher
+    - MQTT_PASS=ClassicPub123
