@@ -1,0 +1,3 @@
+[submodule "code/Python/vedirect"]
+	path = code/Python/vedirect
+	url = https://github.com/karioja/vedirect.git
