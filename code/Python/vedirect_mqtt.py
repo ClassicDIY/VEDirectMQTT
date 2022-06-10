@@ -21,7 +21,8 @@ from time import time_ns
 # --------------------------------------------------------------------------- # 
 MAX_RATE                    = 600       #in seconds
 MIN_RATE                    = 15        #in seconds
-DEFAULT_RATE                = 60        #in seconds
+DEFAULT_PUBLISH_RATE        = 15        #in seconds
+DEFAULT_VE_TIMEOUT          = 60        #in seconds
 MQTT_MAX_ERROR_COUNT        = 300       #Number of errors on the MQTT before the tool exits
 MAIN_LOOP_SLEEP_SECS        = 5         #Seconds to sleep in the main loop
 
@@ -29,15 +30,15 @@ MAIN_LOOP_SLEEP_SECS        = 5         #Seconds to sleep in the main loop
 # Default startup values. Can be over-ridden by command line options.
 # --------------------------------------------------------------------------- # 
 argumentValues = { \
-    'vedirectName':os.getenv('VEDIRECT_HOST', "VDM700"), \
-    'vedirectPort':os.getenv('VEDIRECT_PORT', "/tty/devUSB0"), \
-    'vedirectTimeout':os.getenv('VEDIRECT_TIMEOUT', "60"), \
+    'vedirectName':os.getenv('VEDIRECT_NAME', "BMV700"), \
+    'vedirectPort':os.getenv('VEDIRECT_PORT', "/dev/ttyUSB0"), \
+    'vedirectTimeout':int(os.getenv('VEDIRECT_TIMEOUT', DEFAULT_VE_TIMEOUT)), \
     'mqttHost':os.getenv('MQTT_HOST', "127.0.0.1"), \
     'mqttPort':os.getenv('MQTT_PORT', "1883"), \
-    'mqttRoot':os.getenv('MQTT_ROOT', "ClassicMQTT"), \
+    'mqttRoot':os.getenv('MQTT_ROOT', "VEDirectMQTT"), \
     'mqttUser':os.getenv('MQTT_USER', "ClassicPublisher"), \
     'mqttPassword':os.getenv('MQTT_PASS', "ClassicPub123"), \
-    'publishRate':int(os.getenv('PUBLISH_RATE', str(DEFAULT_RATE)))}
+    'publishRate':int(os.getenv('PUBLISH_RATE', DEFAULT_PUBLISH_RATE))}
 
 # --------------------------------------------------------------------------- # 
 # Counters and status variables
@@ -46,10 +47,10 @@ infoPublished               = False
 mqttConnected               = False
 doStop                      = False
 modeAwake                   = False
-
 mqttErrorCount              = 0
-currentPollRate             = DEFAULT_RATE
+currentPublishRate          = DEFAULT_PUBLISH_RATE
 mqttClient                  = None
+beforeTime                  =-999
 
 # --------------------------------------------------------------------------- # 
 # configure the logging
@@ -92,7 +93,7 @@ def mqttPublish(client, data, subtopic):
 
     topic = "{}{}/{}".format(argumentValues['mqttRoot'], argumentValues['vedirectName'], subtopic)
     log.debug("Publishing: {}".format(topic))
-    
+
     try:
         client.publish(topic,data)
         return True
@@ -104,13 +105,14 @@ def mqttPublish(client, data, subtopic):
 
 
 def vedirect_rx_callback(packet):
-    global mqttClient, mqttErrorCount, currentPollRate
+    global mqttClient, mqttErrorCount, currentPublishRate, beforeTime
 
     timePassed = ((time_ns()/1000000000.0) - beforeTime)
 
     try:
-        if timePassed > currentPollRate:
-            if mqttPublish(mqttClient,packet,"readings"):
+        if timePassed > currentPublishRate:
+            packetJson = json.dumps(packet).encode('utf-8')
+            if mqttPublish(mqttClient,packetJson,"readings"):
                 beforeTime = time_ns() /  1000000000.0
             else:
                 mqttErrorCount += 1
@@ -126,11 +128,12 @@ def vedirect_rx_callback(packet):
 
 def run(argv):
 
-    global doStop, mqttClient
+    global doStop, mqttClient, currentPublishRate
 
     log.info("vedirect_mqtt starting up...")
 
     handleArgs(argv, argumentValues)
+    currentPublishRate = int(argumentValues['publishRate'])
 
     #random seed from the OS
     seed(int.from_bytes( os.urandom(4), byteorder="big"))
@@ -168,7 +171,7 @@ def run(argv):
 
     log.debug("Starting main loop...")
     while not doStop:
-        try:            
+        try:
             time.sleep(MAIN_LOOP_SLEEP_SECS)
 
             if not mqttConnected:
@@ -182,7 +185,7 @@ def run(argv):
         except Exception as e:
             log.error("Caught other exception...")
             log.exception(e, exc_info=True)
-    
+
     log.info("Exited the main loop, stopping other loops")
     log.info("Stopping MQTT loop...")
     mqttClient.loop_stop()

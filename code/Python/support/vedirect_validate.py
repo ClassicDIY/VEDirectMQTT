@@ -61,9 +61,9 @@ def handleArgs(argv,argVals):
     try:
       opts, args = getopt.getopt(argv,"h",
                     ["vedirect_name=",
-					 "vedirect_port=",
-					 "vedirect_timeout=",
-					 "mqtt=",
+                     "vedirect_port=",
+                     "vedirect_timeout=",
+                     "mqtt=",
                      "mqtt_port=",
                      "mqtt_root=",
                      "mqtt_user=",
@@ -83,7 +83,7 @@ def handleArgs(argv,argVals):
         elif opt in ("--vedirect_port"):
             argVals['vedirectPort'] = validateStrParameter(arg,"vedirect_port",argVals['vedirectPort'])
         elif opt in ("--vedirect_timeout"):
-            argVals['vedirectTimeout'] = validateStrParameter(arg,"vedirect_timeout",argVals['vedirectTimeout'])
+            argVals['vedirectTimeout'] = int(validateIntParameter(arg,"vedirect_timeout",int(argVals['vedirectTimeout'])))
         elif opt in ("--mqtt"):
             argVals['mqttHost'] = validateHostnameParameter(arg,"mqtt",argVals['mqttHost'])
         elif opt in ("--mqtt_port"):
@@ -95,7 +95,7 @@ def handleArgs(argv,argVals):
         elif opt in ("--mqtt_pass"):
             argVals['mqttPassword'] = validateStrParameter(arg,"mqtt_pass", argVals['mqttPassword'])
         elif opt in ("--publish_rate"):
-            argVals['publishRate'] = int(validateIntParameter(arg,"publish_rate", argVals['publishRate']))
+            argVals['publishRate'] = int(validateIntParameter(arg,"publish_rate", int(argVals['publishRate'])))
 
     #Validate the wake/snooze stuff
 
