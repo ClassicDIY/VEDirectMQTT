@@ -5,7 +5,7 @@
 When it comes time to run the program, there are parameters that can be set or passed they are:
 **Parameters:**
 ```  
---vedirect_name <VBM700>        : The name of the Victron device you are reading from, defaults to VBM700 if unspecified.  
+--vedirect_name <BMV700>        : The name of the Victron device you are reading from, defaults to VBM700 if unspecified.  
 --vedirect_port </dev/ttyUSB0>  : The name of the usb port the Victron device is plugged into. Defaults to /dev/ttyUSB0 if unspecified.  
 --vedirect_timeout <60>         : The timeout for rading from the Victron device, defaults to 60 if unspecified.  
 --mqtt <127.0.0.1>              : The IP or URL of the MQTT Broker, defaults to 127.0.0.1 if unspecified.  
@@ -15,4 +15,3 @@ When it comes time to run the program, there are parameters that can be set or p
 --mqtt_pass <password>          : The password to access the MQTT Broker.
 --publish_rate <60>             : The amount of seconds between updates (default is 60 seconds).
 ```
-
