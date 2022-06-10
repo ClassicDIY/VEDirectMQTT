@@ -71,19 +71,19 @@ def handleArgs(argv,argVals):
                      "publish_rate="])
     except getopt.GetoptError:
         print("Error parsing command line parameters, please use: py --vedirect_name <{}> --vedirect_port <{}> --vedirect_timeout <{}> --mqtt <{}> --mqtt_port <{}> --mqtt_root <{}> --mqtt_user <username> --mqtt_pass <password> --publish_rate <{}>".format( \
-                    argVals['vedirectName'], argVals['vedirectPort'], argVals['vedirectTimeout'], argVals['mqttHost'], argVals['mqttPort'], argVals['mqttRoot'], argVals['publishRate'])))
+                    argVals['vedirectName'], argVals['vedirectPort'], argVals['vedirectTimeout'], argVals['mqttHost'], argVals['mqttPort'], argVals['mqttRoot'], argVals['publishRate']))
         sys.exit(2)
     for opt, arg in opts:
         if opt == '-h':
-            print ("Parameter help: py --mqtt <{}> --vedirect_name <{}> --vedirect_port <{}> --vedirect_timeout <{}>  --mqtt_port <{}> --mqtt_root <{}> --mqtt_user <username> --mqtt_pass <password> --publish_rate <{}>".format( \
-                    argVals['vedirectName'], argVals['vedirectPort'], argVals['vedirectTimeout'], argVals['mqttHost'], argVals['mqttPort'], argVals['mqttRoot'], argVals['publishRate'])))
+            print ("Parameter help: py --vedirect_name <{}> --vedirect_port <{}> --vedirect_timeout <{}> --mqtt <{}> --mqtt_port <{}> --mqtt_root <{}> --mqtt_user <username> --mqtt_pass <password> --publish_rate <{}>".format( \
+                    argVals['vedirectName'], argVals['vedirectPort'], argVals['vedirectTimeout'], argVals['mqttHost'], argVals['mqttPort'], argVals['mqttRoot'], argVals['publishRate']))
             sys.exit()
         elif opt in ("--vedirect_name"):
             argVals['vedirectName'] = validateStrnameParameter(arg,"vedirect_name",argVals['vedirectName'])
         elif opt in ("--vedirect_port"):
             argVals['vedirectPort'] = validateStrParameter(arg,"vedirect_port",argVals['vedirectPort'])
-        elif opt in ("--vedirect_name"):
-            argVals['vedirectName'] = validateIntParameter(arg,"vedirect_timeout",argVals['vedirectTimeout'])
+        elif opt in ("--vedirect_timeout"):
+            argVals['vedirectTimeout'] = validateStrParameter(arg,"vedirect_timeout",argVals['vedirectTimeout'])
         elif opt in ("--mqtt"):
             argVals['mqttHost'] = validateHostnameParameter(arg,"mqtt",argVals['mqttHost'])
         elif opt in ("--mqtt_port"):
@@ -107,7 +107,7 @@ def handleArgs(argv,argVals):
         sys.exit()
 
     argVals['vedirectName'] = argVals['vedirectName'].strip()
-    argVals['vedirectPort'] = argVals['vedirectName'].strip()
+    argVals['vedirectPort'] = argVals['vedirectPort'].strip()
     argVals['mqttHost'] = argVals['mqttHost'].strip()
     argVals['mqttUser'] = argVals['mqttUser'].strip()
 

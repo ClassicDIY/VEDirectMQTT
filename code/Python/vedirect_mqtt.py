@@ -1,7 +1,6 @@
 #!/usr/bin/python3
-
 from paho.mqtt import client as mqttclient
-from vedirect import Vedirect
+from vedirect.vedirect import Vedirect
 from collections import OrderedDict
 import json
 import time
@@ -32,7 +31,7 @@ MAIN_LOOP_SLEEP_SECS        = 5         #Seconds to sleep in the main loop
 argumentValues = { \
     'vedirectName':os.getenv('VEDIRECT_HOST', "VDM700"), \
     'vedirectPort':os.getenv('VEDIRECT_PORT', "/tty/devUSB0"), \
-    'vedirectName':os.getenv('VEDIRECT_TIMEOUT', "60"), \
+    'vedirectTimeout':os.getenv('VEDIRECT_TIMEOUT', "60"), \
     'mqttHost':os.getenv('MQTT_HOST', "127.0.0.1"), \
     'mqttPort':os.getenv('MQTT_PORT', "1883"), \
     'mqttRoot':os.getenv('MQTT_ROOT', "ClassicMQTT"), \
@@ -104,25 +103,27 @@ def mqttPublish(client, data, subtopic):
         return False
 
 
- def vedirect_rx_callback(packet):
+def vedirect_rx_callback(packet):
     global mqttClient, mqttErrorCount, currentPollRate
 
-	try:
-		if ((time_ns()/1000000000.0 - beforeTime) >= currentPollRate) :
-			if mqttPublish(mqttClient,packet,"readings"):
-				beforeTime = time_ns() /  1000000000.0
-			else
-				mqttErrorCount += 1
+    timePassed = ((time_ns()/1000000000.0) - beforeTime)
 
-	except Exception as e:
-		log.error("Caught Error in periodic")
-		log.exception(e, exc_info=True)
+    try:
+        if timePassed > currentPollRate:
+            if mqttPublish(mqttClient,packet,"readings"):
+                beforeTime = time_ns() /  1000000000.0
+            else:
+                mqttErrorCount += 1
 
+    except Exception as e:
+        log.error("Caught Error in periodic")
+        log.exception(e, exc_info=True)
 
 
 # --------------------------------------------------------------------------- # 
 # Main
-# --------------------------------------------------------------------------- # 
+# --------------------------------------------------------------------------- 
+
 def run(argv):
 
     global doStop, mqttClient
@@ -143,15 +144,16 @@ def run(argv):
     mqttClient.username_pw_set(argumentValues['mqttUser'], password=argumentValues['mqttPassword'])
     mqttClient.on_connect = on_connect    
     mqttClient.on_disconnect = on_disconnect  
-    mqttClient.on_message = on_message
+    #mqttClient.on_message = on_message
 
     #Set Last Will 
-    will_topic = "{}{}/tele/LWT".format(argumentValues['mqttRoot'], argumentValues['classicName'])
+    will_topic = "{}{}/tele/LWT".format(argumentValues['mqttRoot'], argumentValues['vedirectName'])
     mqttClient.will_set(will_topic, payload="Offline", qos=0, retain=False)
 
     try:
         log.info("Connecting to MQTT {}:{}".format(argumentValues['mqttHost'], argumentValues['mqttPort']))
-        mqttClient.connect(host=argumentValues['mqttHost'],port=int(argumentValues['mqttPort'])) 
+#        mqttClient.connect(host=argumentValues['mqttHost'],port=int(argumentValues['mqttPort'])) 
+        mqttClient.connect(host='remotepi.glaserisland.pertino.net',port=1883) 
     except Exception as e:
         log.error("Unable to connect to MQTT, exiting...")
         sys.exit(2)
@@ -162,7 +164,7 @@ def run(argv):
 
 
     # start receiving the VE.Direct data.
-	ve.read_data_callback(vedirect_rx_callback)
+    ve.read_data_callback(vedirect_rx_callback)
 
     log.debug("Starting main loop...")
     while not doStop:
