@@ -1,7 +1,7 @@
 services:
   vedirect_mqtt:
     container_name: vedirect_mqtt
-    build: /home/pi/automation/VEDirectMQTT/code/Python/.
+    build: <location of the git repo>/code/Python/.
     restart: unless-stopped
     devices:
     - /dev/ttyUSB0
@@ -11,7 +11,7 @@ services:
     - VEDIRECT_PORT=/dev/ttyUSB0
     - VEDIRECT_TIMEOUT=60
     - PUBLISH_RATE=15
-    - MQTT_HOST=remotepi.glaserisland.pertino.net
+    - MQTT_HOST=mosquitto
     - MQTT_PORT=1883
     - MQTT_ROOT=VEDirectMQTT
     - MQTT_USER=ClassicPublisher
